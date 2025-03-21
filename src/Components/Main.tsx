@@ -44,7 +44,7 @@ export const Main = () => {
       )}
 
       {!userText.trim() && !aiResponse.trim() && (
-        <p className="text-center text-xl/[35px] md:text-2xl/[36px] lg:max-w-3xl/[36px]">
+        <p className="text-center text-xl/[35px] md:text-2xl/[36px] lg:text-3xl/[36px]">
           Hey👋,{" "}
           <span className="italic">
             I am <span className="font-bold text-bluePrimary">SchemaGenie</span>
