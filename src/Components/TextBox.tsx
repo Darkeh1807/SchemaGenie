@@ -72,7 +72,7 @@ export const TextBox = () => {
 
         <button
           onClick={handleSubmit}
-          className="absolute left-6/7 md:left-7/8 inset-y-0 mt-10 flex bg-black items-center justify-center text-white h-9 w-9 rounded-full focus:outline-none cursor-pointer"
+          className="absolute left-6/7 md:left-8/9 inset-y-0 mt-10 flex bg-black items-center justify-center text-white h-9 w-9 rounded-full focus:outline-none cursor-pointer"
         >
           {loading ? (
             <div className="border-2 h-4 w-4 border-b-0 border-white rounded-full animate-spin"></div>

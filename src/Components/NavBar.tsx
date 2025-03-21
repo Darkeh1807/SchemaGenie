@@ -2,7 +2,7 @@
 export const NavBar = () => {
   return (
     <div className="bg-white container mx-auto px-4 md:px-0 py-5 flex items-center justify-between">
-      <h2 className=" text-base font-bold">SchemaGenie</h2>
+      <h2 className=" text-base font-bold text-bluePrimary">SchemaGenie</h2>
       {/* <p className=" text-base/[28px]">{"Title"}</p> */}
       <div className=" flex items-center gap-3">
         {/* <LuTextSearch className="text-xl text-exploreButtonColor" /> */}
