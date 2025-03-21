@@ -62,7 +62,7 @@ export const Main = () => {
             <p className="text-black text-base">{userText}</p>
           </div>
 
-          <div className="bg-black text-white p-4 rounded-lg overflow-hidden mb-32">
+          <div className="bg-black text-white p-4 rounded-lg overflow-hidden mb-36 md:mb-32">
             <pre className="text-base whitespace-pre-wrap overflow-auto max-h-96">
               {aiResponse}
             </pre>
