@@ -1,1 +1,12 @@
 @import "tailwindcss";
+
+@theme {
+  --color-navbarShadowColor: #e8ecec;
+  --color-exploreButtonColor: #5d5d5d;
+  --color-userChatBubbleColor: #e8e8e880;
+  --color-bluePrimary: #3498db;
+}
+
+body {
+  font-family: montserrat;
+}
