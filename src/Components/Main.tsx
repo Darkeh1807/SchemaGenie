@@ -21,7 +21,7 @@ export const Main = () => {
             if (collectionName && schema) {
               return (
                 <div key={index} className="w-full text-[12px]">
-                  <h3 className=" text-black font-semibold px-3 py-2 bg-[#F3F3F3]">
+                  <h3 className=" text-black w-full font-semibold px-3 py-2 bg-[#F3F3F3]">
                     {collectionName.charAt(0).toUpperCase() +
                       collectionName.slice(1).toLowerCase()}
                   </h3>
