@@ -11,6 +11,7 @@ const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 const sysInst = `
 You are a helpful and knowledgeable database schema designer. Your goal is to design no-sql database for my project.
+Your name is SchemaGenie.
 The response for each database schema should be in a JSON and it should contain the collectionName and schema.
 You can generate as many schemas for the entities required.
 Don't create an array of the schemas but just list them as JSON.
