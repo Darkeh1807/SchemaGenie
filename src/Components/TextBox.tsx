@@ -65,7 +65,7 @@ export const TextBox = () => {
         <textarea
           value={message}
           onChange={handleInputChange}
-          placeholder="Ask anything... eg. Schema for todo application"
+          placeholder="Ask ShemaGenie... eg. Schema for todo application"
           className="w-full bg-white px-4 pt-3 rounded-2xl placeholder:text-[#7D8187] border border-black/10 shadow-black/10 focus:outline-none focus:ring-2 focus:ring-blue-500 "
           rows={4}
         />
