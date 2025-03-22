@@ -5,7 +5,7 @@ import Logo from "../assets/images/Logo.png";
 export const NavBar = () => {
   // const navigate = useNavigate();
   return (
-    <div className="bg-white container fixed top-0 left-0 right-0 mx-auto px-4 md:px-0 py-5 flex items-center justify-between">
+    <div className="bg-white container  top-0 left-0 right-0 mx-auto px-4 md:px-0 py-5 flex items-center justify-between">
       {/* <h2
         onClick={() => navigate("/")}
         className=" cursor-pointer text-base font-bold text-bluePrimary"

@@ -20,7 +20,9 @@ export const Projects = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/projects");
+        const response = await axios.get(
+          "https://schema-genie-backend.vercel.app/api/projects"
+        );
         setProjects(response.data.projects);
       } catch (error) {
         setError("Failed to fetch projects");
@@ -38,9 +40,12 @@ export const Projects = () => {
 
     setCreating(true);
     try {
-      const response = await axios.post("http://localhost:5000/api/projects", {
-        title: newProjectTitle,
-      });
+      const response = await axios.post(
+        "https://schema-genie-backend.vercel.app/api/projects",
+        {
+          title: newProjectTitle,
+        }
+      );
 
       setProjects((prev) => [...prev, response.data.project]);
       setIsModalOpen(false);

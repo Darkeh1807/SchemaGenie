@@ -26,7 +26,7 @@ export const Main = () => {
     const fetchChatHistory = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/chats/${projectId}`
+          `https://schema-genie-backend.vercel.app/api/chats/${projectId}`
         );
         const messages = response.data?.chat?.messages || [];
         setServerMessages(messages);
