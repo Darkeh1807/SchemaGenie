@@ -1,8 +1,20 @@
+import { NavLink } from "react-router";
+import Logo from "../assets/images/Logo.png";
+
 // import { LuTextSearch } from "react-icons/lu";
 export const NavBar = () => {
+  // const navigate = useNavigate();
   return (
-    <div className="bg-white container mx-auto px-4 md:px-0 py-5 flex items-center justify-between">
-      <h2 className=" text-base font-bold text-bluePrimary">SchemaGenie</h2>
+    <div className="bg-white container fixed top-0 left-0 right-0 mx-auto px-4 md:px-0 py-5 flex items-center justify-between">
+      {/* <h2
+        onClick={() => navigate("/")}
+        className=" cursor-pointer text-base font-bold text-bluePrimary"
+      >
+        SchemaGenie
+      </h2> */}
+      <NavLink to={"/"}>
+        <img src={Logo} alt="" />
+      </NavLink>
       {/* <p className=" text-base/[28px]">{"Title"}</p> */}
       <div className=" flex items-center gap-3">
         {/* <LuTextSearch className="text-xl text-exploreButtonColor" /> */}

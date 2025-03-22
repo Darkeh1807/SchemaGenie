@@ -1,13 +1,13 @@
+import { Outlet } from "react-router";
 import "./App.css";
-import { Main } from "./Components/Main";
+
 import { NavBar } from "./Components/NavBar";
-import { TextBox } from "./Components/TextBox";
+
 function App() {
   return (
-    <div className="flex flex-col h-screen relative items-center">
+    <div className="flex flex-col w-full relative ">
       <NavBar />
-      <Main />
-      <TextBox />
+      <Outlet />
     </div>
   );
 }
