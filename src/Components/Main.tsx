@@ -8,6 +8,7 @@ export const Main = () => {
   const [serverMessages, setServerMessages] = useState([]);
   const aiResponse = useChatStore((state) => state.genAIText);
   const userText = useChatStore((state) => state.userText);
+  const setUserText = useChatStore((state) => state.setUserText);
   const schemaJson = useChatStore((state) => state.SchemaJson);
   const setSchemaJSON = useChatStore((state) => state.setSchemaJSON);
   const setGenAIText = useChatStore((state) => state.setGenAIText);
@@ -30,11 +31,12 @@ export const Main = () => {
         const messages = response.data?.chat?.messages || [];
         setServerMessages(messages);
 
-      
-        const lastMessage = messages.at(-1)?.text || "";
-        setGenAIText(lastMessage);
-
+        const lastAIMessage = messages.at(-1)?.text || "";
+        const lastUserText = messages.at(-2)?.text || "";
        
+        setGenAIText(lastAIMessage);
+        setUserText(lastUserText);
+
         const regex = /```json([\s\S]*?)```/g;
         const schemaMap = new Map();
 
@@ -68,7 +70,14 @@ export const Main = () => {
     const intervalId = setInterval(fetchChatHistory, 3000);
 
     return () => clearInterval(intervalId);
-  }, [projectId, serverMessages, schemaJson, setSchemaJSON, setGenAIText]);
+  }, [
+    projectId,
+    serverMessages,
+    schemaJson,
+    setSchemaJSON,
+    setGenAIText,
+    setUserText,
+  ]);
 
   return (
     <div className="bg-white w-full flex-1 flex gap-8 flex-col items-center border-t border-navbarShadowColor p-4">

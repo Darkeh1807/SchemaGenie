@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import axios from "axios";
+import { BiPlus } from "react-icons/bi";
 
 interface Project {
   _id: string;
@@ -53,7 +54,7 @@ export const Projects = () => {
 
   return (
     <div className="w-full container mx-auto flex flex-col justify-center items-center h-screen">
-      <div className="rounded-lg p-6 w-full flex flex-col max-w-md">
+      <div className="rounded-lg p-6 w-full gap-[128px] flex flex-col justify-center items-center">
         {loading ? (
           <p className="text-center text-gray-600">Loading...</p>
         ) : error ? (
@@ -65,7 +66,7 @@ export const Projects = () => {
             {projects.map((project) => (
               <li
                 key={project._id}
-                className="text-center hover:text-blue-600 text-2xl font-medium cursor-pointer"
+                className="text-center hover:text-bluePrimary text-2xl font-medium cursor-pointer"
                 onClick={() => navigate(`/projects/${project._id}`)}
               >
                 {project.title}
@@ -74,16 +75,16 @@ export const Projects = () => {
           </ul>
         )}
 
-        {/* New Project Button */}
+      
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-black text-white px-6 py-2 rounded-lg shadow-md hover:bg-bluePrimary transition"
+          className="bg-black flex gap-1 text-base items-center text-white px-6 py-4 rounded-[100px] cursor-pointer shadow-md hover:bg-bluePrimary transition"
         >
-          New Project
+          <BiPlus /> New Project
         </button>
       </div>
 
-      {/* Project Creation Modal */}
+    
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
