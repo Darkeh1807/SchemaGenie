@@ -33,7 +33,7 @@ export const Main = () => {
 
         const lastAIMessage = messages.at(-1)?.text || "";
         const lastUserText = messages.at(-2)?.text || "";
-       
+
         setGenAIText(lastAIMessage);
         setUserText(lastUserText);
 
@@ -56,7 +56,6 @@ export const Main = () => {
 
         const uniqueSchemas = Array.from(schemaMap.values());
 
-        // Update schemas only if there's a change
         if (JSON.stringify(schemaJson) !== JSON.stringify(uniqueSchemas)) {
           setSchemaJSON(uniqueSchemas);
         }
@@ -80,9 +79,9 @@ export const Main = () => {
   ]);
 
   return (
-    <div className="bg-white w-full flex-1 flex gap-8 flex-col items-center border-t border-navbarShadowColor p-4">
+    <div className="container mx-auto w-full flex-1 flex gap-8 flex-col items-center border-t bg-white border-navbarShadowColor p-4">
       {Array.isArray(schemaJson) && schemaJson.length > 0 && (
-        <div className="container mx-auto grid grid-cols-2 md:grid-cols-3 gap-6 w-full mt-8">
+        <div className=" grid grid-cols-2 md:grid-cols-3 gap-6 w-full mt-8">
           {schemaJson.map((schemaObj, index) => {
             const collectionName = schemaObj?.collectionName;
             const schema = schemaObj?.schema;
@@ -110,7 +109,7 @@ export const Main = () => {
       )}
 
       {serverMessages.length === 0 && (
-        <p className="text-center text-xl/[35px] md:text-2xl/[36px] lg:text-3xl/[36px]">
+        <p className="text-center text-xl/[35px] w-full md:text-2xl/[36px] lg:text-3xl/[36px]">
           Hey👋,{" "}
           <span className="italic">
             I am <span className="font-bold text-bluePrimary">KeyMap</span>
@@ -123,7 +122,7 @@ export const Main = () => {
       )}
 
       {aiResponse.trim() && (
-        <div className="max-w-3xl w-full flex flex-col space-y-4">
+        <div className=" w-full flex flex-col space-y-4">
           <div className="p-4 rounded-lg">
             <p className="text-black text-base">{userText}</p>
           </div>

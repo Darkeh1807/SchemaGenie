@@ -85,7 +85,7 @@ export const Projects = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-lg shadow-lg ">
+          <div className="bg-white  p-12 rounded-lg shadow-lg">
             <h2 className="text-lg font-semibold mb-4">Create New Project</h2>
             <input
               type="text"

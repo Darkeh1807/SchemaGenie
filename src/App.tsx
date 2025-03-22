@@ -5,11 +5,9 @@ import { NavBar } from "./Components/NavBar";
 
 function App() {
   return (
-    <div className="flex flex-col h-screen relative items-center">
+    <div className="flex flex-col w-full relative ">
       <NavBar />
       <Outlet />
-      {/* <Main />
-      <TextBox /> */}
     </div>
   );
 }
