@@ -42,7 +42,7 @@ export const Projects = () => {
         title: newProjectTitle,
       });
 
-      setProjects((prev) => [...prev, response.data.project]); // Update UI
+      setProjects((prev) => [...prev, response.data.project]);
       setIsModalOpen(false);
       setNewProjectTitle("");
     } catch (error) {
@@ -66,7 +66,7 @@ export const Projects = () => {
             {projects.map((project) => (
               <li
                 key={project._id}
-                className="text-center hover:text-bluePrimary text-2xl font-medium cursor-pointer"
+                className="text-center hover:text-bluePrimary text-xl md:text-2xl font-medium cursor-pointer"
                 onClick={() => navigate(`/projects/${project._id}`)}
               >
                 {project.title}
@@ -75,7 +75,6 @@ export const Projects = () => {
           </ul>
         )}
 
-      
         <button
           onClick={() => setIsModalOpen(true)}
           className="bg-black flex gap-1 text-base items-center text-white px-6 py-4 rounded-[100px] cursor-pointer shadow-md hover:bg-bluePrimary transition"
@@ -84,29 +83,28 @@ export const Projects = () => {
         </button>
       </div>
 
-    
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+          <div className="bg-white p-8 rounded-lg shadow-lg ">
             <h2 className="text-lg font-semibold mb-4">Create New Project</h2>
             <input
               type="text"
               placeholder="Enter project title"
               value={newProjectTitle}
               onChange={(e) => setNewProjectTitle(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 "
             />
             <div className="flex justify-end mt-4 space-x-3">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition"
+                className="bg-black cursor-pointer text-white px-4 py-2 rounded-md  transition"
               >
                 Cancel
               </button>
               <button
                 onClick={handleNewProject}
                 disabled={creating}
-                className="bg-bluePrimary text-white px-4 py-2 rounded-md hover:bg-bluePrimary transition disabled:bg-gray-400"
+                className="bg-bluePrimary cursor-pointer text-white px-4 py-2 rounded-md hover:bg-bluePrimary transition disabled:bg-gray-400"
               >
                 {creating ? "Creating..." : "Create"}
               </button>
