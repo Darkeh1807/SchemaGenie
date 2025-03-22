@@ -17,7 +17,7 @@ export const TextBox = () => {
     if (!message.trim()) return;
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:5000/api/chats", {
+      const response = await axios.post("https://schema-genie-backend.vercel.app/api/chats", {
         projectId: selectedProjectId,
         text: message,
       });
