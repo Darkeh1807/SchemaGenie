@@ -1,4 +1,7 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import {
+  GoogleGenerativeAI,
+  GoogleGenerativeAIError,
+} from "@google/generative-ai";
 import { useChatHistoryStore } from "./stores/history_store";
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -54,6 +57,8 @@ export const ChatWithAI = async (message: string): Promise<string> => {
     return responseText;
   } catch (error) {
     console.error("AI Chat Error:", error);
-    return "Sorry, an error occurred while processing your request.";
+    const e = error as Error | GoogleGenerativeAIError;
+
+    return `${e.message} `;
   }
 };
