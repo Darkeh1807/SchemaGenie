@@ -33,7 +33,7 @@ export const TextBox = () => {
 
   return (
     <div className="w-full flex justify-center items-center sticky bottom-10 left-0 z-50">
-      <div className="relative flex items-center justify-center w-5/6 lg:w-1/2">
+      <div className="relative flex items-center justify-center w-5/6 lg:w-[60%]">
         <textarea
           value={message}
           onChange={handleInputChange}
