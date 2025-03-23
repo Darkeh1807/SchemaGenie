@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import axios from "axios";
 import { BiPlus } from "react-icons/bi";
 import { AppConstants } from "../utils/constants";
+import { userProjectTitleStore } from "../utils/stores/project_title_store";
 
 interface Project {
   _id: string;
@@ -16,6 +17,7 @@ export const Projects = () => {
   const [creating, setCreating] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [newProjectTitle, setNewProjectTitle] = useState<string>("");
+  const setTitle = userProjectTitleStore((state) => state.setTitle);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -73,7 +75,10 @@ export const Projects = () => {
               <li
                 key={project._id}
                 className="text-center hover:text-bluePrimary text-xl md:text-2xl font-medium cursor-pointer"
-                onClick={() => navigate(`/projects/${project._id}`)}
+                onClick={function () {
+                  setTitle(project.title);
+                  return navigate(`/projects/${project._id}`);
+                }}
               >
                 {project.title}
               </li>
