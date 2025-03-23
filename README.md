@@ -2,6 +2,8 @@
 
 SchemaGenie is a web application that helps users design and generate database schemas using AI.
 
+Test App Here: https://schemagenie.vercel.app/
+
 ## Features
 
 - Interactive AI-powered database schema generation
