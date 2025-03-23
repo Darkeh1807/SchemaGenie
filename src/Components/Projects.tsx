@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import axios from "axios";
 import { BiPlus } from "react-icons/bi";
+import { AppConstants } from "../utils/constants";
 
 interface Project {
   _id: string;
@@ -21,7 +22,7 @@ export const Projects = () => {
     const fetchProjects = async () => {
       try {
         const response = await axios.get(
-          "https://schema-genie-backend.vercel.app/api/projects"
+          `${AppConstants.baseUrl}/api/projects`
         );
         setProjects(response.data.projects);
       } catch (error) {
@@ -41,7 +42,7 @@ export const Projects = () => {
     setCreating(true);
     try {
       const response = await axios.post(
-        "https://schema-genie-backend.vercel.app/api/projects",
+        `${AppConstants.baseUrl}/api/projects`,
         {
           title: newProjectTitle,
         }
