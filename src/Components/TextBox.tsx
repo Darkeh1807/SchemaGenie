@@ -2,6 +2,7 @@ import { BsArrowUp } from "react-icons/bs";
 import { useState } from "react";
 import axios from "axios";
 import { useProjectIdStore } from "../utils/stores/project_id";
+import { AppConstants } from "../utils/constants";
 
 export const TextBox = () => {
   const [message, setMessage] = useState("");
@@ -17,7 +18,7 @@ export const TextBox = () => {
     if (!message.trim()) return;
     setLoading(true);
     try {
-      const response = await axios.post("https://schema-genie-backend.vercel.app/api/chats", {
+      const response = await axios.post(`${AppConstants.baseUrl}/api/chats`, {
         projectId: selectedProjectId,
         text: message,
       });

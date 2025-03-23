@@ -3,6 +3,7 @@ import { useChatStore } from "../utils/stores/chat_store";
 import axios from "axios";
 import { useParams } from "react-router";
 import { useProjectIdStore } from "../utils/stores/project_id";
+import { AppConstants } from "../utils/constants";
 
 export const Main = () => {
   const [serverMessages, setServerMessages] = useState([]);
@@ -26,7 +27,7 @@ export const Main = () => {
     const fetchChatHistory = async () => {
       try {
         const response = await axios.get(
-          `https://schema-genie-backend.vercel.app/api/chats/${projectId}`
+          `${AppConstants.baseUrl}/api/chats/${projectId}`
         );
         const messages = response.data?.chat?.messages || [];
         setServerMessages(messages);
