@@ -4,6 +4,7 @@ import axios from "axios";
 import { BiPlus } from "react-icons/bi";
 import { AppConstants } from "../utils/constants";
 import { userProjectTitleStore } from "../utils/stores/project_title_store";
+import { UseNetworkService } from "../services/network_service";
 
 interface Project {
   _id: string;
@@ -23,10 +24,8 @@ export const Projects = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get(
-          `${AppConstants.baseUrl}/api/projects`
-        );
-        setProjects(response.data.projects);
+        const response = await UseNetworkService.get("/api/projects");
+        setProjects(response.projects);
       } catch (error) {
         setError("Failed to fetch projects");
         console.log(error);

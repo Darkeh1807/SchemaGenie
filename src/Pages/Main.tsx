@@ -43,6 +43,8 @@ export const Main = () => {
 
         messages.forEach((msg: { text: string }) => {
           const matches = [...msg.text.matchAll(regex)];
+          console.log("-------------matches-----------------------");
+          console.log(matches);
           matches.forEach((match) => {
             try {
               const schema = JSON.parse(match[1].trim());
