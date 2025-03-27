@@ -1,13 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { AppConstants } from "../utils/constants";
-import axios from "axios";
+import { UseNetworkService } from "../services/network_service";
+import { AxiosError } from "axios";
 
+interface ErrorResponse {
+  error?: string;
+  message?: string;
+}
 export const SignUp = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [isSignUpSuccess, setIsSignUpSuccess] = useState<boolean | null>(null);
+  const [signUpStatusMessage, setSignUpStatusMessage] = useState("");
+
+  useEffect(() => {
+    if (isSignUpSuccess !== null) {
+      const timer = setTimeout(() => {
+        setIsSignUpSuccess(null);
+        setSignUpStatusMessage("");
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isSignUpSuccess]);
 
   const handleEmailFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -18,26 +35,48 @@ export const SignUp = () => {
   ) => {
     setPassword(e.target.value);
   };
+  const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
 
   const signUp = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isValidEmail(email)) {
+      setIsSignUpSuccess(false);
+      setSignUpStatusMessage("Please enter a valid email address.");
+      return;
+    }
+
+    if (password.trim() === "") {
+      setIsSignUpSuccess(false);
+      setSignUpStatusMessage("Password cannot be empty.");
+      return;
+    }
+
     try {
       setLoading(true);
-      const response = await axios.post(
-        `${AppConstants.baseUrl}/api/user/signup`,
-        {
-          email,
-          password,
-        }
-      );
+      const path = "/api/user/signup";
+      const body = { email, password };
 
-      if (response.status === 200) {
-        setLoading(false);
+      const response = await UseNetworkService.post(path, body);
+      console.log(response);
+
+      if (response.message === "Success") {
+        setIsSignUpSuccess(true);
+        setSignUpStatusMessage("Sign-in successful!");
         navigate("/projects");
+      } else {
+        setIsSignUpSuccess(false);
+        setSignUpStatusMessage("Invalid email or password.");
       }
-    } catch (e) {
-      setLoading(false);
-      console.log(e);
+    } catch (error) {
+      const axiosError = error as AxiosError<ErrorResponse>;
+      setIsSignUpSuccess(false);
+      setSignUpStatusMessage(
+        axiosError.response?.data?.error ||
+          axiosError.response?.data?.message ||
+          "An unexpected error occurred. Please try again later."
+      );
+      console.error("Error:", axiosError.response?.data);
     } finally {
       setLoading(false);
     }
@@ -83,6 +122,16 @@ export const SignUp = () => {
           </span>
         </p>
       </form>
+      {isSignUpSuccess !== null && (
+        <div
+          className={`fixed bottom-10 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-md text-white ${
+            isSignUpSuccess ? "bg-green-500" : "bg-red-500"
+          }`}
+          aria-live="polite"
+        >
+          {signUpStatusMessage}
+        </div>
+      )}
     </div>
   );
 };
