@@ -115,7 +115,10 @@ export const Main = () => {
         <p className="text-center text-xl/[35px] w-full md:text-2xl/[36px] lg:text-3xl/[36px]">
           Hey👋,{" "}
           <span className="italic">
-            I am <span className="font-bold text-bluePrimary">KeyMap</span>
+            I am{" "}
+            <span className="font-bold text-bluePrimary">
+              {AppConstants.appName}
+            </span>
           </span>{" "}
           <br />
           <span className="text-[#7D8187]">
