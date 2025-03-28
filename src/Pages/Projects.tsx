@@ -5,6 +5,7 @@ import { BiPlus } from "react-icons/bi";
 import { AppConstants } from "../utils/constants";
 import { userProjectTitleStore } from "../utils/stores/project_title_store";
 import { UseNetworkService } from "../services/network_service";
+import { useUserStore } from "../utils/stores/user_store";
 
 interface Project {
   _id: string;
@@ -20,11 +21,15 @@ export const Projects = () => {
   const [newProjectTitle, setNewProjectTitle] = useState<string>("");
   const setTitle = userProjectTitleStore((state) => state.setTitle);
   const navigate = useNavigate();
+  const userId = useUserStore((state) => state.id);
+  const setUserId = useUserStore((state) => state.setUserId);
 
   useEffect(() => {
+    // console.log("Local Storage id" + localStorage.getItem("user_id"));
+    setUserId(localStorage.getItem("user_id") ?? "");
     const fetchProjects = async () => {
       try {
-        const response = await UseNetworkService.get("/api/projects");
+        const response = await UseNetworkService.get(`/api/projects/${userId}`);
         setProjects(response.projects);
       } catch (error) {
         setError("Failed to fetch projects");
@@ -35,7 +40,7 @@ export const Projects = () => {
     };
 
     fetchProjects();
-  }, []);
+  }, [userId, setUserId]);
 
   const handleNewProject = async () => {
     if (!newProjectTitle.trim()) return;
@@ -46,6 +51,7 @@ export const Projects = () => {
         `${AppConstants.baseUrl}/api/projects`,
         {
           title: newProjectTitle,
+          userId: userId,
         }
       );
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { UseNetworkService } from "../services/network_service";
 import { AxiosError } from "axios";
+import { useUserStore } from "../utils/stores/user_store";
 interface ErrorResponse {
   error?: string;
   message?: string;
@@ -14,6 +15,7 @@ export const SignIn = () => {
   const [loading, setLoading] = useState(false);
   const [isSignInSuccess, setIsSignInSuccess] = useState<boolean | null>(null);
   const [signInStatusMessage, setSignInStatusMessage] = useState("");
+  const setUserId = useUserStore((state) => state.setUserId);
 
   useEffect(() => {
     if (isSignInSuccess !== null) {
@@ -59,11 +61,14 @@ export const SignIn = () => {
       const body = { email, password };
 
       const response = await UseNetworkService.post(path, body);
-      console.log(response);
+      // console.log("-------- user id -----------------------");
+      // console.log(response.user._id);
 
       if (response.message === "Success") {
         setIsSignInSuccess(true);
         setSignInStatusMessage("Sign-in successful!");
+        localStorage.setItem("user_id", response.user._id);
+        setUserId(response.user._id);
         navigate("/projects");
       } else {
         setIsSignInSuccess(false);
