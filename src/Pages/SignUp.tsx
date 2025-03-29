@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { UseNetworkService } from "../services/network_service";
 import { AxiosError } from "axios";
+import { useUserStore } from "../utils/stores/user_store";
 
 interface ErrorResponse {
   error?: string;
@@ -10,10 +11,13 @@ interface ErrorResponse {
 export const SignUp = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSignUpSuccess, setIsSignUpSuccess] = useState<boolean | null>(null);
   const [signUpStatusMessage, setSignUpStatusMessage] = useState("");
+  const setUserId = useUserStore((state) => state.setUserId);
+  const setUserName = useUserStore((state) => state.setUserName);
 
   useEffect(() => {
     if (isSignUpSuccess !== null) {
@@ -29,6 +33,9 @@ export const SignUp = () => {
   const handleEmailFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
+  const handleNameFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+  };
 
   const handlePasswordFieldChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -39,6 +46,11 @@ export const SignUp = () => {
 
   const signUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (name.trim() === "") {
+      setIsSignUpSuccess(false);
+      setSignUpStatusMessage("Name cannot be empty.");
+      return;
+    }
 
     if (!isValidEmail(email)) {
       setIsSignUpSuccess(false);
@@ -50,19 +62,28 @@ export const SignUp = () => {
       setIsSignUpSuccess(false);
       setSignUpStatusMessage("Password cannot be empty.");
       return;
+    } else if (password.length <= 8) {
+      setIsSignUpSuccess(false);
+      setSignUpStatusMessage("Password must be more than 8 characters.");
+      return;
     }
 
     try {
       setLoading(true);
       const path = "/api/user/signup";
-      const body = { email, password };
+      const body = { email, password, name };
 
       const response = await UseNetworkService.post(path, body);
       console.log(response);
 
-      if (response.message === "Success") {
+      if (response.message === "Success" && response.newUser) {
         setIsSignUpSuccess(true);
         setSignUpStatusMessage("Sign-in successful!");
+
+      
+        setUserId(response.newUser._id);
+        setUserName(response.newUser.name);
+
         navigate("/projects");
       } else {
         setIsSignUpSuccess(false);
@@ -86,6 +107,13 @@ export const SignUp = () => {
     <div className="fixed px-4 md:px-0 inset-0 flex items-center justify-center z-50">
       <form className="bg-white  p-12 rounded-lg shadow-lg">
         <h2 className="text-lg font-semibold mb-4">Create An Account</h2>
+        <input
+          type="text"
+          placeholder="Enter fullname"
+          required
+          onChange={handleNameFieldChange}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 mb-5 "
+        />
         <input
           type="text"
           placeholder="Enter email"

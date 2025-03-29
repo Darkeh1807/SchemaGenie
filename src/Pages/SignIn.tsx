@@ -16,6 +16,7 @@ export const SignIn = () => {
   const [isSignInSuccess, setIsSignInSuccess] = useState<boolean | null>(null);
   const [signInStatusMessage, setSignInStatusMessage] = useState("");
   const setUserId = useUserStore((state) => state.setUserId);
+  const setUserName = useUserStore((state) => state.setUserName);
 
   useEffect(() => {
     if (isSignInSuccess !== null) {
@@ -67,8 +68,8 @@ export const SignIn = () => {
       if (response.message === "Success") {
         setIsSignInSuccess(true);
         setSignInStatusMessage("Sign-in successful!");
-        localStorage.setItem("user_id", response.user._id);
         setUserId(response.user._id);
+        setUserName(response.user.name);
         navigate("/projects");
       } else {
         setIsSignInSuccess(false);
