@@ -35,8 +35,13 @@ export const NavBar = () => {
         </h2>
       </NavLink>
       <p className=" text-base/[28px]">{projectTitle ?? ""}</p>
-      <div className="flex items-center justify-center h-12 w-12 bg-bluePrimary text-white rounded-full">
-        {userName && <p>{userName.charAt(0)}</p>}
+      <div className="flex items-center gap-4">
+        <p className=" text-base text-red-500 cursor-pointer">Logout</p>
+        {userName && (
+          <div className="flex items-center justify-center h-10 w-10 bg-bluePrimary text-white rounded-full">
+            <p className="text-base">{userName.charAt(0).toUpperCase()}</p>
+          </div>
+        )}
       </div>
     </div>
   );
