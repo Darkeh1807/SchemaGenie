@@ -6,6 +6,9 @@ interface ProjectTitleStore {
 }
 
 export const userProjectTitleStore = create<ProjectTitleStore>((set) => ({
-  title: "",
-  setTitle: (newtitle: string) => set({ title: newtitle }),
+  title: localStorage.getItem("project_title") || "",
+  setTitle: function (newtitle: string) {
+    localStorage.setItem("project_title", newtitle);
+    set({ title: newtitle });
+  },
 }));
