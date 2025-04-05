@@ -6,6 +6,8 @@ import { AppConstants } from "../utils/constants";
 import { userProjectTitleStore } from "../utils/stores/project_title_store";
 import { UseNetworkService } from "../services/network_service";
 import { useUserStore } from "../utils/stores/user_store";
+import { CgShare } from "react-icons/cg";
+import { UserPopup } from "../Components/usersPopup";
 
 interface Project {
   _id: string;
@@ -15,8 +17,11 @@ interface Project {
 export const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [selectUserToShare, setSelectUserToShare] = useState<boolean>(false);
+  const [users, setUsers] = useState([]);
   const [error, setError] = useState<string | null>(null);
   const [creating, setCreating] = useState<boolean>(false);
+  const [hoveredProject, setHoveredProject] = useState("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [newProjectTitle, setNewProjectTitle] = useState<string>("");
   const setTitle = userProjectTitleStore((state) => state.setTitle);
@@ -39,7 +44,18 @@ export const Projects = () => {
       }
     };
 
+    const fetchUsers = async () => {
+      try {
+        const response = await UseNetworkService.get(`/api/user/${userId}`);
+        setUsers(response.users);
+        console.log(response.users);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     fetchProjects();
+    fetchUsers();
   }, [userId, setUserId]);
 
   const handleNewProject = async () => {
@@ -77,16 +93,30 @@ export const Projects = () => {
         ) : (
           <ul className="space-y-5 mb-6">
             {projects.map((project) => (
-              <li
+              <div
+                onMouseEnter={() => setHoveredProject(project._id)}
+                onMouseLeave={() => setHoveredProject("")}
                 key={project._id}
-                className="text-center hover:text-bluePrimary text-xl md:text-2xl font-medium cursor-pointer"
-                onClick={function () {
-                  setTitle(project.title);
-                  return navigate(`/projects/${project._id}`);
-                }}
+                className="flex items-center gap-2"
               >
-                {project.title}
-              </li>
+                <li
+                  className="text-center hover:text-bluePrimary text-xl md:text-2xl font-medium cursor-pointer "
+                  onClick={function () {
+                    setTitle(project.title);
+                    return navigate(`/projects/${project._id}`);
+                  }}
+                >
+                  {project.title}
+                </li>
+                <CgShare
+                  onClick={() => setSelectUserToShare(true)}
+                  className={`text-2xl ${
+                    hoveredProject === project._id
+                      ? "text-bluePrimary"
+                      : "text-white"
+                  } cursor-pointer`}
+                />
+              </div>
             ))}
           </ul>
         )}
@@ -127,6 +157,9 @@ export const Projects = () => {
             </div>
           </div>
         </div>
+      )}
+      {selectUserToShare && (
+        <UserPopup users={users} onClose={() => setSelectUserToShare(false)} />
       )}
     </div>
   );

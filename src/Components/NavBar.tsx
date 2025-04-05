@@ -42,7 +42,7 @@ export const NavBar = () => {
           {AppConstants.appName}
         </h2>
       </NavLink>
-      <p className=" text-base/[28px]">
+      <p className=" text-base/[28px] hidden md:block">
         {projectTitle ?? localStorage.getItem("project_title") ?? ""}
       </p>
       <div className="flex items-center gap-4">
