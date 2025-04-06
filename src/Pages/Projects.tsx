@@ -8,17 +8,38 @@ import { UseNetworkService } from "../services/network_service";
 import { useUserStore } from "../utils/stores/user_store";
 import { CgShare } from "react-icons/cg";
 import { UserPopup } from "../Components/usersPopup";
+import { useShareStore } from "../utils/stores/share_store";
 
 interface Project {
   _id: string;
   title: string;
 }
 
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+}
+
+interface SharedProject {
+  _id: string;
+  from: User;
+  to: User;
+  projectId: {
+    _id: string;
+    title: string;
+    createdAt: string;
+    createdBy: string;
+  };
+}
+
 export const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [sharedProjects, setSharedProjects] = useState<SharedProject[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectUserToShare, setSelectUserToShare] = useState<boolean>(false);
   const [users, setUsers] = useState([]);
+  const [tabIndex, setTabIndex] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [creating, setCreating] = useState<boolean>(false);
   const [hoveredProject, setHoveredProject] = useState("");
@@ -28,14 +49,34 @@ export const Projects = () => {
   const navigate = useNavigate();
   const userId = useUserStore((state) => state.id);
   const setUserId = useUserStore((state) => state.setUserId);
+  const setSharedProjectId = useShareStore((state) => state.setSharedProjectId);
 
   useEffect(() => {
-    // console.log("Local Storage id" + localStorage.getItem("user_id"));
     setUserId(localStorage.getItem("user_id") ?? "");
+
     const fetchProjects = async () => {
       try {
         const response = await UseNetworkService.get(`/api/projects/${userId}`);
         setProjects(response.projects);
+      } catch (error) {
+        setError("Failed to fetch projects");
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    const fetchSharedProjects = async () => {
+      try {
+        const response = await UseNetworkService.get(`/api/share/${userId}`);
+        if (response.message === "Success") {
+          // setProjects(response.projects);
+          // console.log("-------------Shared projects-------------------");
+          // console.log(response.sharedProjects);
+          setSharedProjects(response.sharedProjects);
+          // response.sharedProjects.forEach((project) => {
+          //   console.log(project);
+          // });
+        }
       } catch (error) {
         setError("Failed to fetch projects");
         console.log(error);
@@ -48,13 +89,13 @@ export const Projects = () => {
       try {
         const response = await UseNetworkService.get(`/api/user/${userId}`);
         setUsers(response.users);
-        console.log(response.users);
       } catch (error) {
         console.log(error);
       }
     };
 
     fetchProjects();
+    fetchSharedProjects();
     fetchUsers();
   }, [userId, setUserId]);
 
@@ -82,34 +123,89 @@ export const Projects = () => {
   };
 
   return (
-    <div className="w-full container mx-auto flex flex-col justify-center items-center h-screen">
-      <div className="rounded-lg p-6 w-full gap-[128px] flex flex-col justify-center items-center">
+    <div className="w-full container mx-auto h-screen">
+      <div className="rounded-lg bg-white p-6 w-full gap-[128px] flex flex-col justify-center items-center">
+        <ul className="flex space-x-6 mb-6 text-base font-medium">
+          <li
+            onClick={() => setTabIndex(0)}
+            className={`cursor-pointer ${
+              tabIndex === 0
+                ? " border-b-2 border-bluePrimary text-bluePrimary"
+                : "text-gray-500"
+            }`}
+          >
+            My Projects
+          </li>
+          <li
+            onClick={() => setTabIndex(1)}
+            className={`cursor-pointer ${
+              tabIndex === 1
+                ? "text-bluePrimary border-b-2 border-bluePrimary "
+                : "text-gray-500"
+            }`}
+          >
+            Shared with Me
+          </li>
+        </ul>
+
         {loading ? (
           <p className="text-center text-gray-600">Loading...</p>
         ) : error ? (
           <p className="text-center">{error}</p>
+        ) : tabIndex === 1 ? (
+          sharedProjects.length === 0 ? (
+            <p className="text-center text-gray-600">No shared projects.</p>
+          ) : (
+            <ul className="space-y-5 w-full flex flex-col items-center justify-center">
+              {sharedProjects.map((share: SharedProject) => (
+                <div
+                  key={share._id}
+                  onMouseEnter={() => setHoveredProject(share.projectId._id)}
+                  onMouseLeave={() => setHoveredProject("")}
+                  className="flex flex-col items-start gap-1"
+                >
+                  <li
+                    className="hover:text-bluePrimary text-xl md:text-2xl font-medium cursor-pointer"
+                    onClick={() => {
+                      setTitle(share.projectId.title);
+                      navigate(`/projects/${share.projectId._id}`);
+                    }}
+                  >
+                    {share.projectId.title}
+                  </li>
+                  <p className="text-sm text-gray-600 italic">
+                    Shared by:{" "}
+                    <span className="font-semibold">{share.from.name}</span>
+                  </p>
+                </div>
+              ))}
+            </ul>
+          )
         ) : projects.length === 0 ? (
           <p className="text-center text-gray-600">No projects found.</p>
         ) : (
-          <ul className="space-y-5 mb-6">
+          <ul className="space-y-5 w-full flex flex-col items-center justify-center">
             {projects.map((project) => (
               <div
+                key={project._id}
                 onMouseEnter={() => setHoveredProject(project._id)}
                 onMouseLeave={() => setHoveredProject("")}
-                key={project._id}
                 className="flex items-center gap-2"
               >
                 <li
-                  className="text-center hover:text-bluePrimary text-xl md:text-2xl font-medium cursor-pointer "
-                  onClick={function () {
+                  className="text-center hover:text-bluePrimary text-xl md:text-2xl font-medium cursor-pointer"
+                  onClick={() => {
                     setTitle(project.title);
-                    return navigate(`/projects/${project._id}`);
+                    navigate(`/projects/${project._id}`);
                   }}
                 >
                   {project.title}
                 </li>
                 <CgShare
-                  onClick={() => setSelectUserToShare(true)}
+                  onClick={() => {
+                    setSelectUserToShare(true);
+                    setSharedProjectId(project._id);
+                  }}
                   className={`text-2xl ${
                     hoveredProject === project._id
                       ? "text-bluePrimary"
@@ -121,36 +217,38 @@ export const Projects = () => {
           </ul>
         )}
 
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-black flex gap-1 text-base items-center text-white px-6 py-4 rounded-[100px] cursor-pointer shadow-md hover:bg-bluePrimary transition"
-        >
-          <BiPlus /> New Project
-        </button>
+        {tabIndex === 0 && (
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-black flex gap-1 text-base items-center text-white px-6 py-4 rounded-[100px] cursor-pointer shadow-md hover:bg-bluePrimary transition"
+          >
+            <BiPlus /> New Project
+          </button>
+        )}
       </div>
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white  p-12 rounded-lg shadow-lg">
+          <div className="bg-white p-12 rounded-lg shadow-lg">
             <h2 className="text-lg font-semibold mb-4">Create New Project</h2>
             <input
               type="text"
               placeholder="Enter project title"
               value={newProjectTitle}
               onChange={(e) => setNewProjectTitle(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 "
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2"
             />
             <div className="flex justify-end mt-4 space-x-3">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="bg-black cursor-pointer text-white px-4 py-2 rounded-md  transition"
+                className="bg-black cursor-pointer text-white px-4 py-2 rounded-md"
               >
                 Cancel
               </button>
               <button
                 onClick={handleNewProject}
                 disabled={creating}
-                className="bg-bluePrimary cursor-pointer text-white px-4 py-2 rounded-md hover:bg-bluePrimary transition disabled:bg-gray-400"
+                className="bg-bluePrimary text-white px-4 py-2 rounded-md hover:bg-primatext-bluePrimary cursor-pointer disabled:bg-gray-400"
               >
                 {creating ? "Creating..." : "Create"}
               </button>
@@ -158,6 +256,7 @@ export const Projects = () => {
           </div>
         </div>
       )}
+
       {selectUserToShare && (
         <UserPopup users={users} onClose={() => setSelectUserToShare(false)} />
       )}

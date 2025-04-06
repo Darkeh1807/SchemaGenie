@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import { BiSearch } from "react-icons/bi";
+import { useShareStore } from "../utils/stores/share_store";
+import { UseNetworkService } from "../services/network_service";
 
 interface User {
   _id: string;
@@ -14,10 +16,30 @@ interface UserPopupProps {
 
 export const UserPopup: React.FC<UserPopupProps> = ({ users, onClose }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const setSendTo = useShareStore((state) => state.setSendTo);
+  const sendTo = useShareStore((state) => state.sendTo);
+  const sharedProjectId = useShareStore((state) => state.sharedProjectId);
+
+  const currenUserId = localStorage.getItem("user_id");
 
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const shareProject = async () => {
+    try {
+      const data = {
+        from: currenUserId ?? "",
+        to: sendTo,
+        projectId: sharedProjectId,
+      };
+      const response = await UseNetworkService.post("/api/share", data);
+      console.log(response);
+      onClose();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div
@@ -53,6 +75,10 @@ export const UserPopup: React.FC<UserPopupProps> = ({ users, onClose }) => {
           <ul className="space-y-4">
             {filteredUsers.map((user) => (
               <li
+                onClick={() => {
+                  setSendTo(user._id);
+                  shareProject();
+                }}
                 key={user._id}
                 className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-100 cursor-pointer transition"
               >
