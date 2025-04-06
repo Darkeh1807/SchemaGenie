@@ -6,6 +6,16 @@
   --color-userChatBubbleColor: #e8e8e880;
   --color-bluePrimary: #3498db;
 }
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
 
 body {
   font-family: montserrat;
