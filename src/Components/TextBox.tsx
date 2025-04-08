@@ -1,8 +1,8 @@
 import { BsArrowUp } from "react-icons/bs";
 import { useState } from "react";
-import axios from "axios";
 import { useProjectIdStore } from "../utils/stores/project_id";
 import { AppConstants } from "../utils/constants";
+import { UseNetworkService } from "../services/network_service";
 
 export const TextBox = () => {
   const [message, setMessage] = useState("");
@@ -12,16 +12,19 @@ export const TextBox = () => {
     setMessage(event.target.value);
   };
 
-  const selectedProjectId = useProjectIdStore((state) => state.projectId);
+  const selectedProjectId = useProjectIdStore((state) => state.projectId) || "";
+  const currentUserId = localStorage.getItem("user_id") || "";
 
   const handleSendMessage = async () => {
     if (!message.trim()) return;
     setLoading(true);
     try {
-      const response = await axios.post(`${AppConstants.baseUrl}/api/chats`, {
+      const data = {
         projectId: selectedProjectId,
         text: message,
-      });
+        sentBy: currentUserId,
+      };
+      const response = await UseNetworkService.post(`/api/chats`, data);
 
       console.log("Chat saved:", response.data);
       setMessage("");

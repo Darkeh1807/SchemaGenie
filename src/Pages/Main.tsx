@@ -7,6 +7,8 @@ import { AppConstants } from "../utils/constants";
 
 export const Main = () => {
   const [serverMessages, setServerMessages] = useState([]);
+  const [userWhoLastSentMessage, setUserWhoLastSentMessage] = useState("");
+  const [userLastSentMessageId, setUserLastSentMessageId] = useState("");
   const aiResponse = useChatStore((state) => state.genAIText);
   const userText = useChatStore((state) => state.userText);
   const setUserText = useChatStore((state) => state.setUserText);
@@ -16,6 +18,7 @@ export const Main = () => {
 
   const { projectId } = useParams();
   const setSelectedProjectId = useProjectIdStore((state) => state.setProjectId);
+  const currentLoggedInUserId = localStorage.getItem("user_id");
 
   useEffect(() => {
     if (projectId) {
@@ -30,10 +33,14 @@ export const Main = () => {
           `${AppConstants.baseUrl}/api/chats/${projectId}`
         );
         const messages = response.data?.chat?.messages || [];
-        setServerMessages(messages);
 
+        setServerMessages(messages);
         const lastAIMessage = messages.at(-1)?.text || "";
         const lastUserText = messages.at(-2)?.text || "";
+        console.log(messages.sentBy);
+        setUserLastSentMessageId(messages.at(-2)?.sentBy._id.trim());
+        console.log(messages.at(-2)?.sentBy._id.trim());
+        setUserWhoLastSentMessage(messages.at(-2)?.sentBy.name);
 
         setGenAIText(lastAIMessage);
         setUserText(lastUserText);
@@ -129,8 +136,22 @@ export const Main = () => {
 
       {aiResponse.trim() && (
         <div className=" w-full flex flex-col space-y-4">
-          <div className="p-4 rounded-lg">
-            <p className="text-black text-base">{userText}</p>
+          <div
+            className={`p-4 rounded-lg max-w-xs lg:max-w-xl mb-4 ${
+              userLastSentMessageId === currentLoggedInUserId
+                ? "bg-bluePrimary text-white ml-auto"
+                : "bg-gray-200 text-black mr-auto"
+            }`}
+          >
+            <p className="text-base">{userText}</p>
+            <p className="text-xs text-gray-200 italic mt-2">
+              Sent by:{" "}
+              <span className="font-semibold text-gray-200">
+                {userLastSentMessageId === currentLoggedInUserId
+                  ? "You"
+                  : userWhoLastSentMessage}
+              </span>
+            </p>
           </div>
 
           <div className="bg-black text-white p-4 rounded-lg overflow-hidden mb-36 md:mb-32">
