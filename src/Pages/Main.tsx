@@ -144,9 +144,15 @@ export const Main = () => {
             }`}
           >
             <p className="text-base">{userText}</p>
-            <p className="text-xs text-gray-200 italic mt-2">
+            <p
+              className={`text-xs  italic mt-2 ${
+                userLastSentMessageId === currentLoggedInUserId
+                  ? "text-gray-200"
+                  : "text-gray-500"
+              }`}
+            >
               Sent by:{" "}
-              <span className="font-semibold text-gray-200">
+              <span className={`font-semibold  `}>
                 {userLastSentMessageId === currentLoggedInUserId
                   ? "You"
                   : userWhoLastSentMessage}
