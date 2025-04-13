@@ -180,7 +180,7 @@ export const Main = () => {
           <div className="text-center py-12">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
               Hey 👋, I'm{" "}
-              <span className="text-blue-600">{AppConstants.appName}</span>
+              <span className="text-bluePrimary">{AppConstants.appName}</span>
             </h1>
             <p className="text-lg text-gray-600">
               What database schema are we designing today?
