@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useProjectIdStore } from "../utils/stores/project_id";
 import { AppConstants } from "../utils/constants";
 import { UseNetworkService } from "../services/network_service";
+import { FaMicrophone } from "react-icons/fa";
 
 export const TextBox = () => {
   const [message, setMessage] = useState("");
@@ -45,6 +46,11 @@ export const TextBox = () => {
           className="w-full bg-white px-4 pt-3 rounded-2xl placeholder:text-[#7D8187] border border-black/10 shadow-black/10 focus:outline-none focus:ring-2 focus:ring-blue-500"
           rows={4}
         />
+        <div>
+          <button className="absolute right-16 bottom-4 flex  border-1 border-black items-center justify-center text-black h-9 w-9 rounded-full focus:outline-none cursor-pointer">
+            <FaMicrophone />
+          </button>
+        </div>
 
         <button
           onClick={handleSendMessage}
