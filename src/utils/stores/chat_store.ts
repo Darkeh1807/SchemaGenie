@@ -4,7 +4,7 @@ interface Schema {
   [key: string]: string;  
 }
 
-interface SchemaJsonObject {
+export interface SchemaJsonObject {
   collectionName: string;
   schema: Schema;
 }
