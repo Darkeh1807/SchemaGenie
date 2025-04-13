@@ -18,13 +18,12 @@ export const SignUp = () => {
   const handleEmailFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
+
   const handleNameFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
   };
 
-  const handlePasswordFieldChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handlePasswordFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
   };
 
@@ -50,9 +49,7 @@ export const SignUp = () => {
         setUserName(response.newUser.name);
         navigate("/projects");
       } else {
-        NotifierService.error(
-          response?.message || "Invalid email or password."
-        );
+        NotifierService.error(response?.message || "Invalid email or password.");
       }
     } catch (error) {
       handleNetworkErrors(error);
@@ -60,6 +57,7 @@ export const SignUp = () => {
       setLoading(false);
     }
   };
+
   return (
     <div className="fixed px-4 md:px-0 inset-0 flex items-center justify-center z-50">
       <form
@@ -78,6 +76,8 @@ export const SignUp = () => {
           focus:outline-none hover:focus:border-bluePrimary/40 hover:animate-pulse focus:animate-none focus:ring-2 
           focus:ring-cyan-500/20 transition-all duration-500 mb-5"
         />
+          focus:ring-cyan-500/20 transition-all duration-500 mb-5"
+        />
         <input
           type="email"
           placeholder="Enter email"
@@ -87,6 +87,8 @@ export const SignUp = () => {
           focus:outline-none hover:focus:border-bluePrimary/40 hover:animate-pulse focus:animate-none focus:ring-2 
           focus:ring-cyan-500/20 transition-all duration-500 mb-5"
         />
+          focus:ring-cyan-500/20 transition-all duration-500 mb-5"
+        />
         <input
           type="password"
           required
@@ -94,6 +96,8 @@ export const SignUp = () => {
           placeholder="Enter password"
           className="w-full px-3 py-2 border border-gray-300 rounded-md 
           focus:outline-none hover:focus:border-bluePrimary/40 hover:animate-pulse focus:animate-none focus:ring-2 
+          focus:ring-cyan-500/20 transition-all duration-500"
+        />
           focus:ring-cyan-500/20 transition-all duration-500"
         />
         <div className="flex justify-end mt-4 space-x-3">
