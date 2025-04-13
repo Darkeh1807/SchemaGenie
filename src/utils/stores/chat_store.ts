@@ -1,14 +1,14 @@
 import { create } from "zustand";
 
 interface Schema {
-  [key: string]: string;  
+  [key: string]: string;
 }
 
-interface SchemaJsonObject {
+export interface SchemaJsonObject {
   collectionName: string;
   schema: Schema;
+  description: string;
 }
-
 
 interface ChatState {
   userText: string;
