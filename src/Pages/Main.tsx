@@ -7,6 +7,7 @@ import { AppConstants } from "../utils/constants";
 import { NotifierService } from "../services/notifier_service";
 import { handleNetworkErrors } from "../utils/handle_network_error";
 import { formatSchemaValue } from "../utils/format_schema_values";
+import { downloadJSON, downloadSQL } from "../utils/download_file";
 
 export const Main = () => {
   const [serverMessages, setServerMessages] = useState([]);
@@ -92,10 +93,27 @@ export const Main = () => {
   return (
     <div className="container mx-auto w-full flex-1 flex flex-col gap-8 p-4 bg-white">
       {Array.isArray(schemaJson) && schemaJson.length > 0 && (
-        <section className="mt-8">
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">
-            Database Schemas
-          </h2>
+        <section className="mt-8 ">
+          <div className=" flex justify-between items-center mb-8">
+            {" "}
+            <h2 className="text-xl font-semibold text-gray-800">
+              Database Schemas
+            </h2>
+            <div className=" flex flex-row gap-4">
+              <button
+                onClick={() => downloadJSON(schemaJson)}
+                className="bg-bluePrimary hover:bg-bluePrimary text-white px-4 py-2 cursor-pointer rounded-md text-sm font-medium"
+              >
+                Download JSON
+              </button>
+              <button
+                onClick={() => downloadSQL(schemaJson)}
+                className="bg-bluePrimary hover:bg-bluePrimary text-white px-4 py-2 cursor-pointer rounded-md text-sm font-medium"
+              >
+                Download SQL
+              </button>
+            </div>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {schemaJson.map((schemaObj, index) => {
               const collectionName = schemaObj?.collectionName;
