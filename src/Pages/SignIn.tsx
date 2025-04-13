@@ -1,33 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { UseNetworkService } from "../services/network_service";
-import { AxiosError } from "axios";
+
 import { useUserStore } from "../utils/stores/user_store";
-interface ErrorResponse {
-  error?: string;
-  message?: string;
-}
+import { handleNetworkErrors } from "../utils/handle_network_error";
+import { NotifierService } from "../services/notifier_service";
+import { Toaster } from "react-hot-toast";
 
 export const SignIn = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isSignInSuccess, setIsSignInSuccess] = useState<boolean | null>(null);
-  const [signInStatusMessage, setSignInStatusMessage] = useState("");
   const setUserId = useUserStore((state) => state.setUserId);
   const setUserName = useUserStore((state) => state.setUserName);
-
-  useEffect(() => {
-    if (isSignInSuccess !== null) {
-      const timer = setTimeout(() => {
-        setIsSignInSuccess(null);
-        setSignInStatusMessage("");
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [isSignInSuccess]);
 
   const handleEmailFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -39,22 +25,8 @@ export const SignIn = () => {
     setPassword(e.target.value);
   };
 
-  const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
-
   const signIn = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!isValidEmail(email)) {
-      setIsSignInSuccess(false);
-      setSignInStatusMessage("Please enter a valid email address.");
-      return;
-    }
-
-    if (password.trim() === "") {
-      setIsSignInSuccess(false);
-      setSignInStatusMessage("Password cannot be empty.");
-      return;
-    }
 
     try {
       setLoading(true);
@@ -62,28 +34,19 @@ export const SignIn = () => {
       const body = { email, password };
 
       const response = await UseNetworkService.post(path, body);
-      // console.log("-------- user id -----------------------");
-      // console.log(response.user._id);
 
       if (response.message === "Success") {
-        setIsSignInSuccess(true);
-        setSignInStatusMessage("Sign-in successful!");
+        NotifierService.success("Sign in successful!");
         setUserId(response.user._id);
         setUserName(response.user.name);
         navigate("/projects");
       } else {
-        setIsSignInSuccess(false);
-        setSignInStatusMessage("Invalid email or password.");
+        NotifierService.error(
+          response?.message || "Invalid email or password."
+        );
       }
     } catch (error) {
-      const axiosError = error as AxiosError<ErrorResponse>;
-      setIsSignInSuccess(false);
-      setSignInStatusMessage(
-        axiosError.response?.data?.error ||
-          axiosError.response?.data?.message ||
-          "An unexpected error occurred. Please try again later."
-      );
-      console.error("Error:", axiosError.response?.data);
+      handleNetworkErrors(error);
     } finally {
       setLoading(false);
     }
@@ -136,17 +99,7 @@ export const SignIn = () => {
           </span>
         </p>
       </form>
-
-      {isSignInSuccess !== null && (
-        <div
-          className={`fixed bottom-10 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-md text-white ${
-            isSignInSuccess ? "bg-green-500" : "bg-red-500"
-          }`}
-          aria-live="polite"
-        >
-          {signInStatusMessage}
-        </div>
-      )}
+      <Toaster />
     </div>
   );
 };
