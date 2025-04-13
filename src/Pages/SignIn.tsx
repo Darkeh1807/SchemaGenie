@@ -54,8 +54,13 @@ export const SignIn = () => {
 
   return (
     <div className="fixed px-4 md:px-0 inset-0 flex items-center justify-center z-50">
-      <form className="bg-white p-12 rounded-lg shadow-lg" onSubmit={signIn}>
-        <h2 className="text-lg font-semibold mb-4">Sign In to Your Account</h2>
+      <form
+        className="bg-white p-6 w-md rounded-lg shadow-sm border border-dashed border-gray-300"
+        onSubmit={signIn}
+      >
+        <h2 className="text-lg md:text-2xl text-center font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-b from-black to-gray-50">
+          Sign In to Your Account
+        </h2>
 
         <input
           type="text"
@@ -63,7 +68,9 @@ export const SignIn = () => {
           value={email}
           onChange={handleEmailFieldChange}
           placeholder="Enter email"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 mb-5"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md 
+          focus:outline-none hover:focus:border-bluePrimary/40 hover:animate-pulse focus:animate-none focus:ring-2 
+          focus:ring-cyan-500/20 transition-all duration-500 mb-5"
         />
 
         <input
@@ -72,14 +79,16 @@ export const SignIn = () => {
           value={password}
           onChange={handlePasswordFieldChange}
           placeholder="Enter password"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md 
+          focus:outline-none hover:focus:border-bluePrimary/40 hover:animate-pulse focus:animate-none focus:ring-2 
+          focus:ring-cyan-500/20 transition-all duration-500"
         />
 
         <div className="flex justify-end mt-4 space-x-3">
           <button
             type="submit"
             disabled={loading}
-            className="bg-bluePrimary cursor-pointer text-white px-4 py-2 rounded-md hover:bg-bluePrimary transition disabled:bg-gray-400"
+            className="bg-bluePrimary flex items-center justify-center w-full cursor-pointer text-white px-4 py-2 rounded-md hover:bg-bluePrimary/70 transition disabled:bg-bluePrimary/50"
           >
             {loading ? (
               <div className="border-2 h-4 w-4 border-b-0 border-white rounded-full animate-spin"></div>
@@ -89,7 +98,7 @@ export const SignIn = () => {
           </button>
         </div>
 
-        <p className="text-base">
+        <p className="text-sm mt-4">
           Don't have an account?{" "}
           <span
             onClick={() => navigate("/signup")}
