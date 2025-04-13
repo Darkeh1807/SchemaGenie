@@ -4,6 +4,9 @@ import axios from "axios";
 import { useParams } from "react-router";
 import { useProjectIdStore } from "../utils/stores/project_id";
 import { AppConstants } from "../utils/constants";
+import { NotifierService } from "../services/notifier_service";
+import { handleNetworkErrors } from "../utils/handle_network_error";
+import { formatSchemaValue } from "../utils/format_schema_values";
 
 export const Main = () => {
   const [serverMessages, setServerMessages] = useState([]);
@@ -15,158 +18,178 @@ export const Main = () => {
   const schemaJson = useChatStore((state) => state.SchemaJson);
   const setSchemaJSON = useChatStore((state) => state.setSchemaJSON);
   const setGenAIText = useChatStore((state) => state.setGenAIText);
-
   const { projectId } = useParams();
   const setSelectedProjectId = useProjectIdStore((state) => state.setProjectId);
   const currentLoggedInUserId = localStorage.getItem("user_id");
 
   useEffect(() => {
-    if (projectId) {
-      setSelectedProjectId(projectId);
-    }
+    if (projectId) setSelectedProjectId(projectId);
   }, [projectId, setSelectedProjectId]);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchChatHistory = async () => {
       try {
         const response = await axios.get(
           `${AppConstants.baseUrl}/api/chats/${projectId}`
         );
+        if (!isMounted) return;
+
         const messages = response.data?.chat?.messages || [];
-
         setServerMessages(messages);
-        const lastAIMessage = messages.at(-1)?.text || "";
-        const lastUserText = messages.at(-2)?.text || "";
-        console.log(messages.sentBy);
-        setUserLastSentMessageId(messages.at(-2)?.sentBy._id.trim());
-        console.log(messages.at(-2)?.sentBy._id.trim());
-        setUserWhoLastSentMessage(messages.at(-2)?.sentBy.name);
 
-        setGenAIText(lastAIMessage);
-        setUserText(lastUserText);
+        if (JSON.stringify(messages) !== JSON.stringify(serverMessages)) {
+          const lastAIMessage = messages.at(-1)?.text || "";
+          const lastUserText = messages.at(-2)?.text || "";
+
+          setGenAIText(lastAIMessage);
+          setUserText(lastUserText);
+          setUserLastSentMessageId(messages.at(-2)?.sentBy._id.trim());
+          setUserWhoLastSentMessage(messages.at(-2)?.sentBy.name);
+        }
 
         const regex = /```json([\s\S]*?)```/g;
         const schemaMap = new Map();
-
         messages.forEach((msg: { text: string }) => {
           const matches = [...msg.text.matchAll(regex)];
-          // console.log("-------------matches-----------------------");
-          // console.log(matches);
           matches.forEach((match) => {
             try {
               const schema = JSON.parse(match[1].trim());
-              if (schema.collectionName) {
+              if (schema.collectionName)
                 schemaMap.set(schema.collectionName, schema);
-              }
             } catch (error) {
-              console.error("Error parsing JSON schema:", error);
+              NotifierService.error((error as Error).message);
             }
           });
         });
 
         const uniqueSchemas = Array.from(schemaMap.values());
-
         if (JSON.stringify(schemaJson) !== JSON.stringify(uniqueSchemas)) {
           setSchemaJSON(uniqueSchemas);
         }
       } catch (error) {
-        console.error("Error fetching chat history:", error);
+        if (isMounted) handleNetworkErrors(error);
       }
     };
 
     fetchChatHistory();
-
     const intervalId = setInterval(fetchChatHistory, 3000);
 
-    return () => clearInterval(intervalId);
+    return () => {
+      isMounted = false;
+      clearInterval(intervalId);
+    };
   }, [
     projectId,
-    serverMessages,
     schemaJson,
-    setSchemaJSON,
+    serverMessages,
     setGenAIText,
+    setSchemaJSON,
     setUserText,
   ]);
 
   return (
-    <div className="container mx-auto w-full flex-1 flex gap-8 flex-col items-center border-t bg-white border-navbarShadowColor p-4">
+    <div className="container mx-auto w-full flex-1 flex flex-col gap-8 p-4 bg-white">
       {Array.isArray(schemaJson) && schemaJson.length > 0 && (
-        <div className=" grid grid-cols-2 md:grid-cols-3 gap-6 w-full mt-8">
-          {schemaJson.map((schemaObj, index) => {
-            const collectionName = schemaObj?.collectionName;
-            const schema = schemaObj?.schema;
+        <section className="mt-8">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">
+            Database Schemas
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {schemaJson.map((schemaObj, index) => {
+              const collectionName = schemaObj?.collectionName;
+              const schema = schemaObj?.schema;
 
-            return collectionName && schema ? (
-              <div key={index} className="w-full text-[12px]">
-                <h3 className="text-black w-full font-semibold px-3 py-2 bg-[#F3F3F3]">
-                  {collectionName.charAt(0).toUpperCase() +
-                    collectionName.slice(1).toLowerCase()}
-                </h3>
-                <table className="table-auto w-full text-left border border-[#E1E4EA]">
-                  <tbody>
-                    {Object.entries(schema).map(([key, value]) => (
-                      <tr key={key}>
-                        <td className="px-3 py-2">{key}</td>
-                        <td className="px-3 py-2">{String(value)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : null;
-          })}
-        </div>
+              return collectionName && schema ? (
+                <div
+                  key={index}
+                  className="border border-gray-300 rounded-lg overflow-hidden shadow-sm"
+                >
+                  <div className="bg-gray-50 px-4 py-3 border-b">
+                    <h3 className="font-medium text-gray-900">
+                      {collectionName.charAt(0).toUpperCase() +
+                        collectionName.slice(1)}
+                    </h3>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <tbody className="divide-y divide-gray-200">
+                        {Object.entries(schema).map(([key, value]) => (
+                          <tr key={key}>
+                            <td className="px-4 py-2 text-sm font-medium text-gray-700">
+                              {key}
+                            </td>
+                            <td className="px-4 py-2 text-sm text-gray-500">
+                              {formatSchemaValue(value)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : null;
+            })}
+          </div>
+        </section>
       )}
 
-      {serverMessages.length === 0 && (
-        <p className="text-center text-xl/[35px] w-full md:text-2xl/[36px] lg:text-3xl/[36px]">
-          Hey👋,{" "}
-          <span className="italic">
-            I am{" "}
-            <span className="font-bold text-bluePrimary">
-              {AppConstants.appName}
-            </span>
-          </span>{" "}
-          <br />
-          <span className="text-[#7D8187]">
-            What database schema are we designing today?
-          </span>
-        </p>
-      )}
-
-      {aiResponse.trim() && (
-        <div className=" w-full flex flex-col space-y-4">
-          <div
-            className={`p-4 rounded-lg max-w-xs lg:max-w-xl mb-4 ${
-              userLastSentMessageId === currentLoggedInUserId
-                ? "bg-bluePrimary text-white ml-auto"
-                : "bg-gray-200 text-black mr-auto"
-            }`}
-          >
-            <p className="text-base">{userText}</p>
-            <p
-              className={`text-xs  italic mt-2 ${
-                userLastSentMessageId === currentLoggedInUserId
-                  ? "text-gray-200"
-                  : "text-gray-500"
-              }`}
-            >
-              Sent by:{" "}
-              <span className={`font-semibold  `}>
-                {userLastSentMessageId === currentLoggedInUserId
-                  ? "You"
-                  : userWhoLastSentMessage}
-              </span>
+      <section className="flex-1 w-full">
+        {serverMessages.length === 0 ? (
+          <div className="text-center py-12">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+              Hey 👋, I'm{" "}
+              <span className="text-blue-600">{AppConstants.appName}</span>
+            </h1>
+            <p className="text-lg text-gray-600">
+              What database schema are we designing today?
             </p>
           </div>
+        ) : (
+          <div className="space-y-4">
+            {userText.trim() && (
+              <div
+                className={`flex ${
+                  userLastSentMessageId === currentLoggedInUserId
+                    ? "justify-end"
+                    : "justify-start"
+                }`}
+              >
+                <div
+                  className={`max-w-md rounded-lg p-4 ${
+                    userLastSentMessageId === currentLoggedInUserId
+                      ? "bg-bluePrimary text-white"
+                      : "bg-gray-100 text-gray-800"
+                  }`}
+                >
+                  <p>{userText}</p>
+                  <p
+                    className={`text-xs mt-1 ${
+                      userLastSentMessageId === currentLoggedInUserId
+                        ? "text-blue-100"
+                        : "text-gray-500"
+                    }`}
+                  >
+                    Sent by:{" "}
+                    {userLastSentMessageId === currentLoggedInUserId
+                      ? "You"
+                      : userWhoLastSentMessage}
+                  </p>
+                </div>
+              </div>
+            )}
 
-          <div className="bg-black text-white p-4 rounded-lg overflow-hidden mb-36 md:mb-32">
-            <pre className="text-base whitespace-pre-wrap overflow-auto max-h-96">
-              {aiResponse}
-            </pre>
+            {aiResponse.trim() && (
+              <div className="bg-gray-800 text-gray-100 rounded-lg p-4 overflow-y-auto max-h-[300px] md:max-h-[500px] lg:max-h-[700px]">
+                <pre className="whitespace-pre-wrap font-sans text-sm md:text-base">
+                  {aiResponse}
+                </pre>
+              </div>
+            )}
           </div>
-        </div>
-      )}
+        )}
+      </section>
     </div>
   );
 };
