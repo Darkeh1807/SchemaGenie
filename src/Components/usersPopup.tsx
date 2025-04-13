@@ -34,8 +34,6 @@ export const UserPopup: React.FC<UserPopupProps> = ({ users, onClose }) => {
   );
 
   const shareProject = async (userId: string) => {
-   
-
     setIsSharing(true);
 
     try {
@@ -71,33 +69,33 @@ export const UserPopup: React.FC<UserPopupProps> = ({ users, onClose }) => {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white px-6 rounded-lg shadow-lg py-10 max-h-[80vh] overflow-y-auto scrollbar-hide"
+        className="bg-white md:w-6/12 lg:w-4/12 px-8 rounded-lg shadow-lg  max-h-[80vh] overflow-y-auto scrollbar-hide"
       >
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Select User To Share With</h2>
+        <div className="sticky top-0 left-0 right-0 z-50 bg-white mt-6">
+          <div className="flex justify-between items-center mb-4 ">
+            <h2 className="text-lg font-semibold">Select User To Share With</h2>
 
-          {sharing ? (
-            <div className="border-2 h-4 w-4 border-b-0 border-bluePrimary rounded-full animate-spin" />
-          ) : (
-            <FaTimes
-              onClick={onClose}
-              className="cursor-pointer text-gray-500 hover:text-black"
+            {sharing ? (
+              <div className="border-2 h-4 w-4 border-b-0 border-bluePrimary rounded-full animate-spin" />
+            ) : (
+              <FaTimes
+                onClick={onClose}
+                className="cursor-pointer text-gray-500 hover:text-black"
+              />
+            )}
+          </div>
+          <div className="relative mb-4">
+            <input
+              type="text"
+              placeholder="Search users..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-3 py-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              disabled={sharing}
             />
-          )}
+            <BiSearch className="absolute left-3 top-3 text-gray-500" />
+          </div>
         </div>
-
-        <div className="relative mb-4">
-          <input
-            type="text"
-            placeholder="Search users..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-3 py-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            disabled={sharing}
-          />
-          <BiSearch className="absolute left-3 top-3 text-gray-500" />
-        </div>
-
         {filteredUsers.length === 0 ? (
           <p className="text-center text-gray-600">No users found.</p>
         ) : (
