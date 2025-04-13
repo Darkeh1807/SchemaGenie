@@ -3,18 +3,18 @@ import { FaTimes } from "react-icons/fa";
 import { BiSearch } from "react-icons/bi";
 import { useShareStore } from "../utils/stores/share_store";
 import { UseNetworkService } from "../services/network_service";
-import { AxiosError } from "axios";
 import { NotifierService } from "../services/notifier_service";
 import { Toaster } from "react-hot-toast";
+import { handleNetworkErrors } from "../utils/handle_network_error";
 
 interface User {
   _id: string;
   name: string;
 }
 
-interface ServerError {
+export type ServerError = {
   error: string;
-}
+};
 
 interface UserPopupProps {
   users: User[];
@@ -34,7 +34,10 @@ export const UserPopup: React.FC<UserPopupProps> = ({ users, onClose }) => {
   );
 
   const shareProject = async (userId: string) => {
+   
+
     setIsSharing(true);
+
     try {
       const data = {
         from: currentUserId ?? "",
@@ -44,23 +47,16 @@ export const UserPopup: React.FC<UserPopupProps> = ({ users, onClose }) => {
 
       const res = await UseNetworkService.post("/api/share", data);
 
-      console.log("Share response:", res);
-
       if (res.message === "Success") {
         NotifierService.success("Project shared successfully!");
-        onClose();
+        setTimeout(onClose, 1000);
       } else {
-        NotifierService.error("Something went wrong while sharing.");
+        NotifierService.error(
+          res.message || "Something went wrong while sharing."
+        );
       }
     } catch (error) {
-      const axiosError = error as AxiosError;
-      if (axiosError) {
-        const networkError = axiosError.response?.data as ServerError;
-        NotifierService.error(networkError.error ?? axiosError.message);
-      } else {
-        const err = error as Error;
-        NotifierService.error(err.message);
-      }
+      handleNetworkErrors(error);
     } finally {
       setIsSharing(false);
     }
