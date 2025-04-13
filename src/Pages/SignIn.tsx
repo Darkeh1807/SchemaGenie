@@ -84,11 +84,11 @@ export const SignIn = () => {
           focus:ring-cyan-500/20 transition-all duration-500"
         />
 
-        <div className="flex justify-start w-full mt-4 space-x-3">
+        <div className="flex justify-end mt-4 space-x-3">
           <button
             type="submit"
             disabled={loading}
-            className="bg-bluePrimary w-full cursor-pointer text-white px-4 py-2 rounded-md hover:bg-bluePrimary/70 transition disabled:bg-gray-400"
+            className="bg-bluePrimary flex items-center justify-center w-full cursor-pointer text-white px-4 py-2 rounded-md hover:bg-bluePrimary/70 transition disabled:bg-bluePrimary/50"
           >
             {loading ? (
               <div className="border-2 h-4 w-4 border-b-0 border-white rounded-full animate-spin"></div>
