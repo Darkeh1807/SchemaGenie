@@ -93,22 +93,21 @@ export const Main = () => {
   return (
     <div className="container mx-auto w-full flex-1 flex flex-col gap-8 p-4 bg-white">
       {Array.isArray(schemaJson) && schemaJson.length > 0 && (
-        <section className="mt-8 ">
-          <div className=" flex justify-between items-center mb-8">
-            {" "}
+        <section className="mt-8">
+          <div className=" md:flex flex-row justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-gray-800">
               Database Schemas
             </h2>
-            <div className=" flex flex-row gap-4">
+            <div className="flex gap-2 mt-4 md:mt-0">
               <button
                 onClick={() => downloadJSON(schemaJson)}
-                className="bg-bluePrimary hover:bg-bluePrimary text-white px-4 py-2 cursor-pointer rounded-md text-sm font-medium"
+                className="bg-bluePrimary hover:bg-bluePrimary text-white px-3 py-2 cursor-pointer rounded-md text-sm font-medium whitespace-nowrap transition-colors"
               >
                 Download JSON
               </button>
               <button
                 onClick={() => downloadSQL(schemaJson)}
-                className="bg-bluePrimary hover:bg-bluePrimary text-white px-4 py-2 cursor-pointer rounded-md text-sm font-medium"
+                className="bg-bluePrimary hover:bg-bluePrimary text-white px-3 py-2 cursor-pointer rounded-md text-sm font-medium whitespace-nowrap transition-colors"
               >
                 Download SQL
               </button>
@@ -118,17 +117,40 @@ export const Main = () => {
             {schemaJson.map((schemaObj, index) => {
               const collectionName = schemaObj?.collectionName;
               const schema = schemaObj?.schema;
+              const description = schemaObj.description;
 
               return collectionName && schema ? (
                 <div
                   key={index}
                   className="border border-gray-300 rounded-lg overflow-hidden shadow-sm"
                 >
-                  <div className="bg-gray-50 px-4 py-3 border-b">
-                    <h3 className="font-medium text-gray-900">
-                      {collectionName.charAt(0).toUpperCase() +
-                        collectionName.slice(1)}
-                    </h3>
+                  <div className="bg-gray-50 px-4 py-3 border-b flex justify-between items-center">
+                    <div>
+                      <h3 className="font-medium text-gray-900">
+                        {collectionName.charAt(0).toUpperCase() +
+                          collectionName.slice(1)}
+                      </h3>
+
+                      {description && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          {description}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => downloadJSON([schemaObj])}
+                        className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded hover:bg-blue-100 whitespace-nowrap"
+                      >
+                        JSON
+                      </button>
+                      <button
+                        onClick={() => downloadSQL([schemaObj])}
+                        className="text-xs bg-green-50 text-green-600 px-2 py-1 rounded hover:bg-green-100 whitespace-nowrap"
+                      >
+                        SQL
+                      </button>
+                    </div>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
