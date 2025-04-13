@@ -9,6 +9,7 @@ import { useUserStore } from "../utils/stores/user_store";
 import { CgShare } from "react-icons/cg";
 import { UserPopup } from "../Components/usersPopup";
 import { useShareStore } from "../utils/stores/share_store";
+import { handleNetworkErrors } from "../utils/handle_network_error";
 
 interface Project {
   _id: string;
@@ -40,7 +41,7 @@ export const Projects = () => {
   const [selectUserToShare, setSelectUserToShare] = useState<boolean>(false);
   const [users, setUsers] = useState([]);
   const [tabIndex, setTabIndex] = useState(0);
-  const [error, setError] = useState<string | null>(null);
+
   const [creating, setCreating] = useState<boolean>(false);
   const [hoveredProject, setHoveredProject] = useState("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -59,8 +60,7 @@ export const Projects = () => {
         const response = await UseNetworkService.get(`/api/projects/${userId}`);
         setProjects(response.projects);
       } catch (error) {
-        setError("Failed to fetch projects");
-        console.log(error);
+        handleNetworkErrors(error);
       } finally {
         setLoading(false);
       }
@@ -69,17 +69,10 @@ export const Projects = () => {
       try {
         const response = await UseNetworkService.get(`/api/share/${userId}`);
         if (response.message === "Success") {
-          // setProjects(response.projects);
-          // console.log("-------------Shared projects-------------------");
-          // console.log(response.sharedProjects);
           setSharedProjects(response.sharedProjects);
-          // response.sharedProjects.forEach((project) => {
-          //   console.log(project);
-          // });
         }
       } catch (error) {
-        setError("Failed to fetch projects");
-        console.log(error);
+        handleNetworkErrors(error);
       } finally {
         setLoading(false);
       }
@@ -90,7 +83,7 @@ export const Projects = () => {
         const response = await UseNetworkService.get(`/api/user/${userId}`);
         setUsers(response.users);
       } catch (error) {
-        console.log(error);
+        handleNetworkErrors(error);
       }
     };
 
@@ -116,14 +109,16 @@ export const Projects = () => {
       setIsModalOpen(false);
       setNewProjectTitle("");
     } catch (error) {
-      console.error("Error creating new project:", error);
+      handleNetworkErrors(error);
     } finally {
       setCreating(false);
     }
   };
 
   return (
-    <div className="w-full container mx-auto h-screen">
+    <div className="w-full container mx-auto h-screen relative pb-20">
+      {" "}
+      
       <div className="rounded-lg bg-white p-6 w-full gap-[128px] flex flex-col justify-center items-center">
         <ul className="flex space-x-6 mb-6 text-base font-medium">
           <li
@@ -150,8 +145,6 @@ export const Projects = () => {
 
         {loading ? (
           <p className="text-center text-gray-600">Loading...</p>
-        ) : error ? (
-          <p className="text-center">{error}</p>
         ) : tabIndex === 1 ? (
           sharedProjects.length === 0 ? (
             <p className="text-center text-gray-600">No shared projects.</p>
@@ -216,17 +209,17 @@ export const Projects = () => {
             ))}
           </ul>
         )}
-
-        {tabIndex === 0 && (
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-black flex gap-1 text-base items-center text-white px-6 py-4 rounded-[100px] cursor-pointer shadow-md hover:bg-bluePrimary transition"
-          >
-            <BiPlus /> New Project
-          </button>
-        )}
       </div>
-
+      
+      {tabIndex === 0 && (
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="fixed bottom-8 right-8 bg-black flex gap-2 items-center text-white px-6 py-4 rounded-full cursor-pointer shadow-lg hover:bg-bluePrimary transition hover:scale-105 z-50"
+        >
+          <BiPlus className="text-xl" />
+          <span className="text-base">New Project</span>
+        </button>
+      )}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white p-12 rounded-lg shadow-lg">
@@ -256,7 +249,6 @@ export const Projects = () => {
           </div>
         </div>
       )}
-
       {selectUserToShare && (
         <UserPopup users={users} onClose={() => setSelectUserToShare(false)} />
       )}
